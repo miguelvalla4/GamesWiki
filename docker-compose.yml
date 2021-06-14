@@ -1,0 +1,47 @@
+version: '3.7'
+
+volumes:
+  logs:
+    driver: local
+
+services:
+  slim:
+    image: graphicresources/itpg-backoffice-coding-task:development
+    working_dir: /var/www
+    command: php -S 0.0.0.0:8080 -t public
+    environment:
+      docker: "true"
+    ports:
+      - 8080:8080
+    volumes:
+      - ./app:/var/www
+      - ./app/logs:/var/www/logs
+    networks:
+      - bridge
+
+  db:
+    image: percona
+    restart: always
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./opt/db:/docker-entrypoint-initdb.d
+      - .mysql-data:/var/lib/mysql
+      - .mysql-log:/var/log/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: good_old_videogames
+    healthcheck:
+      test: "/usr/bin/mysql --user=root --password=root --execute \"SHOW DATABASES;\""
+      interval: 3s
+      timeout: 1s
+      retries: 5
+    networks:
+      - bridge
+
+volumes:
+  .mysql-data:
+  .mysql-log:
+
+networks:
+  bridge:

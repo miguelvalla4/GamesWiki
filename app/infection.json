@@ -1,0 +1,14 @@
+{
+    "timeout": 10,
+    "source": {
+        "directories": [
+            "src"
+        ]
+    },
+    "logs": {
+        "text": "test/report/infection/mutant.log"
+    },
+    "mutators": {
+        "@default": true
+    }
+}
