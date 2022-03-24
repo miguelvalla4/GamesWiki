@@ -1,118 +1,121 @@
 <?php
+
 declare(strict_types=1);
 
-
 namespace App\Infrastructure\Slim\Action\Companies;
+
+use DateTime;
 use PDO;
-
-
-
 use App\Infrastructure\Slim\Action\Action;
 use Psr\Http\Message\ResponseInterface as Response;
+use Psr\Log\LoggerInterface;
 
 class CompaniesAction extends Action
 {
+    private $pdo;
+
+    public function __construct(LoggerInterface $logger)
+    {
+        parent::__construct($logger);
+
+        $this->pdo = new PDO(
+            'mysql:host=db;dbname=good_old_videogames;charset=utf8mb4',
+            $_ENV['DATABASE_USER'],
+            $_ENV['DATABASE_PASSWORD']
+        );
+    }
+
     /**
      * {@inheritdoc}
      */
     protected function action(): Response
     {
-        $_ENV['DATABASE_NAME'];
-        $_ENV['DATABASE_USER'];
-        $_ENV['DATABASE_PASSWORD'];
-        $_ENV['DATABASE_HOST'];
-        $_ENV['DATABASE_PORT'];
-        
-
-        $date=date('d-m-Y');
-        //Variable que guarda la fecha de referencia para tag VINTAGE
-        $vintage=strtotime('-20 year', strtotime($date));
-        $vintage=date('Y-m-d',$vintage);
-  
-        //Variable que guarda la fecha de referencia para tag OLDIE
-        $oldie=strtotime('-30 year', strtotime($date));
-        $oldie=date('Y-m-d',$oldie);
-
         //Almacenamiento en variable del id de la compañia
-        $id_company=$this->request->getAttribute('id');
-        
+        $id_company = $this->request->getAttribute('id');
+
         //Variables para la paginacion
-        $page = isset($_GET['page']) ? $_GET['page']:1;
+        $page = (int) ($this->request->getQueryParams()['page'] ?? 1);
         $limite =  3;
-        $ini = ($page>1) ? (($limite*$page)-$limite):0 ;
+        $ini = $page > 1 ? $limite * $page - $limite : 0;
 
         //Consultas
-        $sql="SELECT SQL_CALC_FOUND_ROWS * FROM games WHERE company_id = $id_company LIMIT :limite OFFSET :ini ";
-        $sql2 = "SELECT id FROM companies WHERE companies.location  LIKE '%, Japón'";
-
+        $sqlTotal = "SELECT COUNT(*) as `total` FROM games WHERE company_id = $id_company";
+        $sqlResult = "SELECT * FROM games WHERE company_id = $id_company LIMIT :limite OFFSET :ini";
 
         //Ejecucion de las consultas
-        try{
-            
-            $pdo = new PDO('mysql:host=db;dbname=good_old_videogames;charset=utf8mb4',$_ENV['DATABASE_USER'], $_ENV['DATABASE_PASSWORD']);
-            $pdo2 = new PDO('mysql:host=db;dbname=good_old_videogames;charset=utf8mb4',$_ENV['DATABASE_USER'], $_ENV['DATABASE_PASSWORD']);
+        try {
+            $result = $this->getResults($this->pdo, $sqlResult, $limite, $ini);
+            $total = $this->getResults($this->pdo, $sqlTotal, $limite, $ini);
 
-            
-            $stmt = $pdo->prepare($sql);
-            $nipon = $pdo2->prepare($sql2);
+            $cntReg = $total[0]['total'];
 
-            $stmt->bindValue(':limite', $limite, \PDO::PARAM_INT);
-            $stmt->bindValue(':ini', $ini, \PDO::PARAM_INT);
-
-            $stmt->execute();
-            $nipon->execute();
-
-            $result=$stmt->fetchAll(PDO::FETCH_ASSOC);
-            $nipon=$nipon->fetchAll(PDO::FETCH_ASSOC);
-
-            $cntReg=$pdo->query("SELECT FOUND_ROWS() as TOTAL");
-            $cntReg=$cntReg->fetch()['TOTAL'];
-
-            $nPags=ceil($cntReg/$limite);
-       
-        }catch(PDOException $e){
+            $nPags = ceil($cntReg / $limite);
+        } catch (PDOException $e) {
             die('Error.');
         }
 
-        //Tag
-        foreach($result as $key => $value){
-            foreach ($nipon as $i => $valor){
-                if($nipon[$i]['id']==$result[$key]['company_id']){
-                    $result[$key]['tag'][]="Nipón";
+        $result = $this->getTags($result);
+
+        //return
+        if ($page > $nPags) {
+            return $this->respondWithData([
+                'message' => 'No me quedan mas datos que mostrarte :\'(',
+                'FILE' => __FILE__
+            ]);
+        }
+
+        return $this->respondWithData([
+            'message' => $result,
+            'FILE' => __FILE__
+        ]);
+    }
+
+    private function getTags(array $result): array
+    {
+        $sqlNipon = "SELECT id FROM companies WHERE companies.location  LIKE '%, Japón'";
+        $nipon = $this->getResults($this->pdo, $sqlNipon);
+
+        //$date = date('d-m-Y');
+
+        //Variable que guarda la fecha de referencia para tag VINTAGE
+        $vintage = new DateTime('-20 year');
+        //$vintage = strtotime('-20 year', strtotime($date));
+        //$vintage = date('Y-m-d', $vintage);
+
+        //Variable que guarda la fecha de referencia para tag OLDIE
+        $oldie = new DateTime('-30 year');
+        //$oldie = strtotime('-30 year', strtotime($date));
+        //$oldie = date('Y-m-d', $oldie);
+
+        foreach ($result as $key => $value) {
+            foreach ($nipon as $valor) {
+                if ($valor['id'] === $result[$key]['company_id']) {
+                    $result[$key]['tag'][] = "Nipón";
                 }
             }
-        
-            if ((($result[$key]['type']=="Lucha")||($result[$key]['type']=="Beat 'em up"))   ){
 
-                $result[$key]['tag'][]="Machacabotones";
-            }
-            if($result[$key]['released_on']<=$oldie  ){
-
-                $result[$key]['tag'][]="Oldie but Goldie";
-
-            }elseif($result[$key]['released_on']>$oldie){
-
-                $result[$key]['tag'][]="Vintage";
+            if ((($result[$key]['type'] === "Lucha") || ($result[$key]['type'] === "Beat 'em up"))) {
+                $result[$key]['tag'][] = "Machacabotones";
             }
 
+            if ($result[$key]['released_on'] >= $oldie && $result[$key]['released_on'] < $vintage) {
+                $result[$key]['tag'][] = "Vintage";
+            }
 
+            if ($result[$key]['released_on'] < $oldie) {
+                $result[$key]['tag'][] = "Oldie but Goldie";
+            }
         }
-        
-        
-        //return
-        if($page>$nPags){
-            return $this->respondWithData([
-                'message'=>'No me quedan mas datos que mostrarte :\'(',
-                'FILE'=>__FILE__
-            ]);
-        }{
-        return $this->respondWithData([
-            'message'=>$result,
-            'FILE'=>__FILE__
-       
-        ]);
-        }
-    
+        return $result;
     }
-  
+
+    private function getResults(PDO $pdo, string $sql, ?int $limite = null, ?int $ini = null): array
+    {
+        $stmt = $pdo->prepare($sql);
+        $stmt->bindValue(':limite', $limite, \PDO::PARAM_INT);
+        $stmt->bindValue(':ini', $ini, \PDO::PARAM_INT);
+        $stmt->execute();
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC) ?? [];
+    }
 }
