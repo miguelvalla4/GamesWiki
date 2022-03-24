@@ -16,6 +16,8 @@ class GreetingAction extends Action
         return $this->respondWithData([
             'message' => '¡Hola mundo!',
             'ruta' => __FILE__,
+       
         ]);
     }
+  
 }
