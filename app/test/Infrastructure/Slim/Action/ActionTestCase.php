@@ -13,6 +13,7 @@ use Slim\Psr7\Factory\StreamFactory;
 use Slim\Psr7\Headers;
 use Slim\Psr7\Request as SlimRequest;
 use Slim\Psr7\Uri;
+use Symfony\Component\Dotenv\Dotenv;
 
 class ActionTestCase extends TestCase
 {
@@ -26,6 +27,8 @@ class ActionTestCase extends TestCase
         $containerBuilder = new ContainerBuilder();
 
         // Container intentionally not compiled for tests.
+
+        (new Dotenv())->load(__DIR__ . '/../../../../.env');
 
         // Set up settings
         $settings = require __DIR__ . '/../../../../config/settings.php';

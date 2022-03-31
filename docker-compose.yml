@@ -22,7 +22,6 @@ services:
   db:
     image: percona
     restart: always
-    platform: "linux/amd64"
     ports:
       - "3306:3306"
     volumes:

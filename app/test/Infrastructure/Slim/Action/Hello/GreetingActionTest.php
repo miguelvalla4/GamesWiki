@@ -8,7 +8,7 @@ use Tests\Infrastructure\Slim\Action\ActionTestCase;
 
 class GreetingActionTest extends ActionTestCase
 {
-    private const FILE_PATH = '/app/src/Infrastructure/Slim/Action/Hello/GreetingAction.php';
+    private const FILE_PATH = '/var/www/src/Infrastructure/Slim/Action/Hello/GreetingAction.php';
 
     public function testAction()
     {
@@ -19,7 +19,7 @@ class GreetingActionTest extends ActionTestCase
 
         $payload = (string) $response->getBody();
         $expectedPayload = new ActionPayload(200, [
-             'message' => '¡Hola mundo!',
+             'message' => 'Hello world!',
              'ruta' => self::FILE_PATH,
          ]);
         $serializedPayload = json_encode($expectedPayload, JSON_PRETTY_PRINT);

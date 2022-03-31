@@ -62,7 +62,7 @@ composer-require-dev: ## Añade nuevas dependencias de desarrollo
 
 # TESTING COMMANDS ----------------------------------------------------------------------------------------------------
 test: ## PHPUnit test
-	docker run --rm -v ${PWD}/app:/app -w /app $(IMAGE_NAME):$(IMAGE_TAG_DEV) php ./vendor/bin/phpunit --no-coverage --color=always
+	docker-compose exec slim php ./vendor/bin/phpunit --no-coverage --color=always
 
 test-coverage: ## PHPUnit test and coverage
 	docker run --rm -v ${PWD}:/app -w /app $(IMAGE_NAME):$(IMAGE_TAG_DEV) rm -rf test/report || echo "No existe la carpeta de reportes previamente"

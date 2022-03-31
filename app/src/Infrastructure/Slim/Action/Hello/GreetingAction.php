@@ -14,10 +14,10 @@ class GreetingAction extends Action
     protected function action(): Response
     {
         return $this->respondWithData([
-            'message' => '¡Hola mundo!',
+            'message' => 'Hello world!',
             'ruta' => __FILE__,
-       
+
         ]);
     }
-  
+
 }
