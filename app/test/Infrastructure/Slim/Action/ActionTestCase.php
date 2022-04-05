@@ -38,6 +38,10 @@ class ActionTestCase extends TestCase
         $dependencies = require __DIR__ . '/../../../../config/dependencies.php';
         $dependencies($containerBuilder);
 
+        // Set up repositories
+        $repositories = require __DIR__ . '/../../../../config/repositories.php';
+        $repositories($containerBuilder);
+
         // Build PHP-DI Container instance
         $container = $containerBuilder->build();
 

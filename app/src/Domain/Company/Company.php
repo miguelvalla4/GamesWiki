@@ -3,8 +3,9 @@ declare(strict_types=1);
 
 namespace App\Domain\Company;
 
+use App\Domain\ValidDate;
 use DateTime;
-use DomainException;
+use Exception;
 
 class Company
 {
@@ -13,22 +14,13 @@ class Company
     protected $foundedOn;
     protected $location;
 
-    public function __construct(int $id, string $name, DateTime $foundedOn, string $location)
+    /** @throws Exception */
+    public function __construct(int $id, string $name, string $foundedOn, string $location)
     {
         $this->id = $id;
         $this->name = $name;
         $this->location = Location::buildFromString($location);
-
-        $this->setFoundedOn($foundedOn);
-    }
-
-    private function setFoundedOn(DateTime $foundedOn): void
-    {
-        if ((new DateTime()) < $foundedOn) {
-            throw new DomainException('La fecha es mayor que el momento presente.');
-        }
-
-        $this->foundedOn = $foundedOn;
+        $this->foundedOn = ValidDate::convertToDateTime($foundedOn);
     }
 
     public function getId(): int

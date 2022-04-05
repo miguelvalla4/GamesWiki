@@ -153,30 +153,9 @@ abstract class Action
         return $page > 1 ? self::LIMIT * $page - self::LIMIT : 0;
     }
 
-    protected function getQueryExecute(PDO $pdo, string $sql, ?int $ini = null): array
-    {
-        $stmt = $pdo->prepare($sql);
-        $stmt->bindValue(':limit', self::LIMIT, PDO::PARAM_INT);
-        $stmt->bindValue(':ini', $ini, PDO::PARAM_INT);
-        $stmt->execute();
-
-        return $stmt->fetchAll(PDO::FETCH_ASSOC) ?? [];
-    }
-
-    protected function queryDataResult(string $sqlResult, ?int $ini = null): array
-    {
-        try {
-            return $this->getQueryExecute($this->pdo, $sqlResult, $ini);
-        } catch (PDOException $e) {
-            die('Error.');
-        }
-    }
-
-    protected function queryNumberDataResult(string $sqlTotal): array
-    {
-        return $this->getQueryExecute($this->pdo, $sqlTotal);
-    }
-
+    /**
+     * @throws Exception
+     */
     protected function getTags(array $gamesResults): array
     {
         $queryJapan = "SELECT id FROM companies WHERE companies.location  LIKE '%, Japón'";
