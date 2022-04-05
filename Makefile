@@ -71,6 +71,9 @@ test-coverage: ## PHPUnit test and coverage
 test-mutant: ## Infection Mutant Testing
 	docker run --rm -e "XDEBUG_MODE=coverage" -v ${PWD}/app:/app -w /app $(IMAGE_NAME):$(IMAGE_TAG_DEV) php ./vendor/bin/infection
 
+test-group-%:
+	docker-compose exec slim php ./vendor/bin/phpunit --no-coverage --color=always --group ${*}
+
 # OTHER COMMANDS & UTILS -----------------------------------------------------------------------------------------------
 up: ## Levanta los servicios
 	docker-compose up -d

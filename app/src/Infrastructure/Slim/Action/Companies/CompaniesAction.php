@@ -3,19 +3,19 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Slim\Action\Companies;
 
+use App\Application\UseCase\Game\ViewGameByCompanyIdUseCase;
 use App\Domain\Company\CompanyRepository;
-use App\Domain\Game\GameRepository;
 use App\Infrastructure\Slim\Action\Action;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Log\LoggerInterface;
 
 class CompaniesAction extends Action
 {
-    protected $gameRepository;
+    protected $ViewGameByCompanyIdUseCase;
 
-    public function __construct(GameRepository $gameRepository, LoggerInterface $logger)
+    public function __construct(ViewGameByCompanyIdUseCase $ViewGameByCompanyIdUseCase, LoggerInterface $logger)
     {
-        $this->gameRepository = $gameRepository;
+        $this->ViewGameByCompanyIdUseCase = $ViewGameByCompanyIdUseCase;
         parent::__construct($logger);
     }
 
@@ -29,7 +29,7 @@ class CompaniesAction extends Action
         $id = $this->getId();
 
         return $this->respondWithData(array(
-            'message' =>  $this->gameRepository->getGamesByCompanyId($id, $page, $ini),
+            'message' =>  $this->ViewGameByCompanyIdUseCase->execute($id, $page, $ini),
             'ruta' => __FILE__,
         ));
     }
