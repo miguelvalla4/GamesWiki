@@ -42,20 +42,4 @@ class Company
     {
         return $this->location;
     }
-
-    public function isFromSameLocation(Company $anotherCompany): bool
-    {
-        return $this->isFromSameCountry($anotherCompany)
-            && $this->isFromSameCity($anotherCompany);
-    }
-
-    public function isFromSameCountry(Company $anotherCompany): bool
-    {
-        return $this->location->isSameCountry($anotherCompany->getLocation());
-    }
-
-    public function isFromSameCity(Company $anotherCompany): bool
-    {
-        return $this->location->isSameCity($anotherCompany->getLocation());
-    }
 }
