@@ -17,7 +17,7 @@ class ValidDate extends DateTime
     /** @throws Exception */
     public static function convertToDateTime(string $rawDate): self
     {
-        if ((new DateTime()) < $rawDate) {
+        if ((new DateTime()) < new DateTime($rawDate)) {
             throw new DomainException('La fecha es mayor que el momento presente.');
         }
 

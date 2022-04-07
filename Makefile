@@ -65,11 +65,11 @@ test: ## PHPUnit test
 	docker-compose exec slim php ./vendor/bin/phpunit --no-coverage --color=always
 
 test-coverage: ## PHPUnit test and coverage
-	docker run --rm -v ${PWD}:/app -w /app $(IMAGE_NAME):$(IMAGE_TAG_DEV) rm -rf test/report || echo "No existe la carpeta de reportes previamente"
-	docker run --rm -e "XDEBUG_MODE=coverage" -v ${PWD}/app:/app -w /app $(IMAGE_NAME):$(IMAGE_TAG_DEV) php ./vendor/bin/phpunit --color=always
+	rm -rf test/report || echo "No existe la carpeta de reportes previamente"
+	docker-compose exec -e XDEBUG_MODE=coverage slim php ./vendor/bin/phpunit --color=always
 
 test-mutant: ## Infection Mutant Testing
-	docker run --rm -e "XDEBUG_MODE=coverage" -v ${PWD}/app:/app -w /app $(IMAGE_NAME):$(IMAGE_TAG_DEV) php ./vendor/bin/infection
+	docker run --rm -v ${PWD}/app:/app -w /app $(IMAGE_NAME):$(IMAGE_TAG_DEV) php ./vendor/bin/infection
 
 test-group-%:
 	docker-compose exec slim php ./vendor/bin/phpunit --no-coverage --color=always --group ${*}

@@ -1,10 +1,10 @@
 <?php
 declare(strict_types=1);
 
-namespace Tests\Infrastructure\Slim\Action\Hello;
+namespace Test\Infrastructure\Slim\Action\Hello;
 
 use App\Infrastructure\Slim\Action\ActionPayload;
-use Tests\Infrastructure\Slim\Action\ActionTestCase;
+use Test\Infrastructure\Slim\Action\ActionTestCase;
 
 class GreetingActionTest extends ActionTestCase
 {

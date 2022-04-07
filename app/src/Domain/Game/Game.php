@@ -94,16 +94,6 @@ class Game implements JsonSerializable
         return $this->releasedOn;
     }
 
-    public function getCompany_Id(): int
-    {
-        return $this->company->getId();
-    }
-
-    public function getSystem_Id(): int
-    {
-        return $this->system->getId();
-    }
-
     public function jsonSerialize(): array
     {
         return [

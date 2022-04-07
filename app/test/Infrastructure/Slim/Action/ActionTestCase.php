@@ -1,11 +1,10 @@
 <?php
+
 declare(strict_types=1);
 
-namespace Tests\Infrastructure\Slim\Action;
+namespace Test\Infrastructure\Slim\Action;
 
-use DI\ContainerBuilder;
 use Exception;
-use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\App;
 use Slim\Factory\AppFactory;
@@ -13,9 +12,9 @@ use Slim\Psr7\Factory\StreamFactory;
 use Slim\Psr7\Headers;
 use Slim\Psr7\Request as SlimRequest;
 use Slim\Psr7\Uri;
-use Symfony\Component\Dotenv\Dotenv;
+use Test\Infrastructure\ContainerAwareTestCase;
 
-class ActionTestCase extends TestCase
+class ActionTestCase extends ContainerAwareTestCase
 {
     /**
      * @return App
@@ -23,30 +22,8 @@ class ActionTestCase extends TestCase
      */
     protected function getAppInstance(): App
     {
-        // Instantiate PHP-DI ContainerBuilder
-        $containerBuilder = new ContainerBuilder();
-
-        // Container intentionally not compiled for tests.
-
-        (new Dotenv())->load(__DIR__ . '/../../../../.env');
-
-        // Set up settings
-        $settings = require __DIR__ . '/../../../../config/settings.php';
-        $settings($containerBuilder);
-
-        // Set up dependencies
-        $dependencies = require __DIR__ . '/../../../../config/dependencies.php';
-        $dependencies($containerBuilder);
-
-        // Set up repositories
-        $repositories = require __DIR__ . '/../../../../config/repositories.php';
-        $repositories($containerBuilder);
-
-        // Build PHP-DI Container instance
-        $container = $containerBuilder->build();
-
         // Instantiate the app
-        AppFactory::setContainer($container);
+        AppFactory::setContainer($this->getContainer());
         $app = AppFactory::create();
 
         // Register middleware

@@ -27,38 +27,8 @@ class System
         $this->releasedOn = ValidDate::convertToDateTime($releasedOn);
     }
 
-    public function getId(): int
-    {
-        return $this->id;
-    }
-
-    public function isSameSystemId (System $otherSystem): bool
-    {
-        return $this->id === $otherSystem->getId();
-    }
-
     public function getName(): string
     {
         return $this->name;
-    }
-
-    public function getDescription(): string
-    {
-        return $this->description;
-    }
-
-    public function getGeneration(): string
-    {
-        return $this->generation;
-    }
-
-    public function getReleasedOn(): ValidDate
-    {
-        return $this->releasedOn;
-    }
-
-    public function getCompany(): Company
-    {
-        return $this->company;
     }
 }

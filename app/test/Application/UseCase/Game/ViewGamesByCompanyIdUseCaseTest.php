@@ -5,11 +5,13 @@ declare(strict_types=1);
 namespace Test\Application\UseCase\Game;
 
 use App\Application\UseCase\Game\ViewGameByCompanyIdUseCase;
+use DomainException;
 use App\Domain\Game\Game;
 use App\Domain\Game\GameRepository;
 use App\Infrastructure\Factory\CompanyFactory;
 use App\Infrastructure\Factory\SystemFactory;
 use Exception;
+use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 
 class ViewGamesByCompanyIdUseCaseTest extends TestCase
@@ -189,6 +191,110 @@ class ViewGamesByCompanyIdUseCaseTest extends TestCase
 
         $mock = $this->createMock(GameRepository::class);
         $mock->expects(self::once())->method('getGamesByCompanyId')->willReturn($expected);
+
+        return $mock;
+    }
+
+    /**
+     * @group unhappypath
+     * @throws Exception
+     */
+    public function testFailWhenGameReleasedAfterNow()
+    {
+        self::expectException(DomainException::class);
+        self::expectExceptionMessage('La fecha es mayor que el momento presente.');
+
+        $sut = new ViewGameByCompanyIdUseCase($this->getMockForException());
+
+        $sut->execute(1, 1,0);
+    }
+
+    /**
+     * @throws Exception
+     */
+    private function getMockForException()
+    {
+        $mock = $this->createMock(GameRepository::class);
+        $mock->expects(self::never())->method('getGamesByCompanyId')->willReturn([
+                new Game(
+                    1,
+                    "Alex Kidd in Miracle world",
+                    "Plataformas",
+                    "1986-11-01",
+                    CompanyFactory::buildFromArray([
+                        'company_id' => 1,
+                        'company_name' => 'SEGA',
+                        'founded_on' => '2060-06-03',
+                        'location' => 'Shinagawa, Japón'
+                    ]),
+                    SystemFactory::buildFromArrayAndCompany([
+                        'system_id' => 1,
+                        'system_name' => 'Master System',
+                        'description' => 'Comercializada en Japón bajo el nombre SEGA Mark III, es una consola de videojuegos de 8 bits basada en cartuchos y tarjetas, que fue desarrollada por SEGA. Aunque estuvo muy por detrás en ventas fuera de Europa, Brasil y con un éxito moderado en Argentina, la experiencia sentó los cimientos para que SEGA continuara con su liderazgo en esos mercados durante la siguiente generación con la Mega Drive. Su cese de producción, con excepción de Brasil, fue en 1996.',
+                        'generation' => "3",
+                        'system_released_on' => "1985-10-20"
+                    ],
+                        CompanyFactory::buildFromArray([
+                            'company_id' => 1,
+                            'company_name' => 'SEGA',
+                            'founded_on' => '2060-06-03',
+                            'location' => 'Shinagawa, Japón'
+                        ])
+                    )
+                )]
+        );
+
+        return $mock;
+    }
+
+    /**
+     * @group unhappypath
+     * @throws Exception
+     */
+    public function testValidLocation()
+    {
+        self::expectException(InvalidArgumentException::class);
+
+        $sut = new ViewGameByCompanyIdUseCase($this->getMockValidLocation());
+
+        $sut->execute(1,1,0);
+    }
+
+    /**
+     * @throws Exception
+     */
+    private function getMockValidLocation()
+    {
+        $mock = $this->createMock(GameRepository::class);
+
+        $mock->expects(self::never())->method('getGamesByCompanyId')->willReturn([
+            new Game(
+                1,
+                "Alex Kidd in Miracle world",
+                "Plataformas",
+                "1986-11-01",
+                CompanyFactory::buildFromArray([
+                    'company_id' => 1,
+                    'company_name' => 'SEGA',
+                    'founded_on' => '2060-06-03',
+                    'location' => 'Shinagawa. Japón'
+                ]),
+                SystemFactory::buildFromArrayAndCompany([
+                    'system_id' => 1,
+                    'system_name' => 'Master System',
+                    'description' => 'Comercializada en Japón bajo el nombre SEGA Mark III, es una consola de videojuegos de 8 bits basada en cartuchos y tarjetas, que fue desarrollada por SEGA. Aunque estuvo muy por detrás en ventas fuera de Europa, Brasil y con un éxito moderado en Argentina, la experiencia sentó los cimientos para que SEGA continuara con su liderazgo en esos mercados durante la siguiente generación con la Mega Drive. Su cese de producción, con excepción de Brasil, fue en 1996.',
+                    'generation' => "3",
+                    'system_released_on' => "1985-10-20"
+                ],
+                    CompanyFactory::buildFromArray([
+                        'company_id' => 1,
+                        'company_name' => 'SEGA',
+                        'founded_on' => '2060-06-03',
+                        'location' => 'Shinagawa. Japón'
+                    ])
+                )
+            )
+        ]);
 
         return $mock;
     }

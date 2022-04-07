@@ -137,20 +137,5 @@ SQL;
         return array_map(function ($result){
             return GameFactory::buildFromArray($result);
         }, $result);
-
     }
-
-    public function getTotalGames(): array
-    {
-        $sqlTotal = <<<SQL
-SELECT COUNT(*) as 'total' from games;
-SQL;
-
-        $statement = $this->pdo->prepare($sqlTotal);
-        $statement->execute();
-
-        return $statement->fetchAll(PDO::FETCH_ASSOC);
-    }
-
-
 }

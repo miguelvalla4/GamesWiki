@@ -4,7 +4,7 @@ declare (strict_types=1);
 namespace Test\Infrastructure\Slim\Action\Game;
 
 use App\Infrastructure\Slim\Action\ActionPayload;
-use Tests\Infrastructure\Slim\Action\ActionTestCase;
+use Test\Infrastructure\Slim\Action\ActionTestCase;
 
 class GameActionTest extends ActionTestCase
 {

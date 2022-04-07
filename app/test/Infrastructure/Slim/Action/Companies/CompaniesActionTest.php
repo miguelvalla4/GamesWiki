@@ -3,8 +3,8 @@ declare (strict_types=1);
 
 namespace Test\Infrastructure\Slim\Action\Companies;
 
-use App\{Infrastructure\Slim\Action\ActionPayload};
-use Tests\Infrastructure\Slim\Action\ActionTestCase;
+use App\Infrastructure\Slim\Action\ActionPayload;
+use Test\Infrastructure\Slim\Action\ActionTestCase;
 
 class CompaniesActionTest extends ActionTestCase
 {
