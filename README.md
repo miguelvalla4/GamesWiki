@@ -1,6 +1,6 @@
-# Backoffice coding task
+# GameWiki
 
-Este es el proyecto de la prueba técnica para el equipo de Backoffice.
+Este es el esqueleto de un proyecto "Wiki"
 
 ---
 
