@@ -26,4 +26,9 @@ class MySqlGameRepositoryTest extends MySqlAwareTestCase
             self::assertInstanceOf(System::class, $game->getSystem());
         }
     }
+
+    public function testGetGamesByCompanyId()
+    {
+
+    }
 }

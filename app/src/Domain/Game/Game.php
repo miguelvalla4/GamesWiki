@@ -94,6 +94,16 @@ class Game implements JsonSerializable
         return $this->releasedOn;
     }
 
+    public function getCompany(): Company
+    {
+        return $this->company;
+    }
+
+    public function getSystem(): System
+    {
+        return $this->system;
+    }
+
     public function jsonSerialize(): array
     {
         return [

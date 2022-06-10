@@ -1,0 +1,1 @@
+{"buildTargets":["all","build","build-container","composer-install","composer-require","composer-require-dev","composer-update","down","help","test","test-coverage","test-mutant","up"],"launchTargets":[],"customConfigurationProvider":{"workspaceBrowse":{"browsePath":[],"compilerArgs":[]},"fileIndex":[]}}
