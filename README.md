@@ -1,6 +1,6 @@
-# GameWiki
+# WikiOldGames
 
-Este es el esqueleto de un proyecto "Wiki"
+Prueba técnica refactorizada aplicando ddd y arquitectura hexagonal
 
 ---
 
